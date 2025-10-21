@@ -15,7 +15,23 @@ async function install(req, res) {
         PRIMARY KEY (userid)
       );
     `);
-
+    // Reset Password
+    try {
+      await dbConnection.query(`
+        ALTER TABLE users
+        ADD COLUMN reset_token VARCHAR(255),
+        ADD COLUMN reset_expires DATETIME;
+      `);
+      console.log("✅ Added reset_token and reset_expires columns");
+    } catch (err) {
+      if (err.code === "ER_DUP_FIELDNAME") {
+        console.log(
+          "ℹ reset_token and reset_expires already exist, skipping..."
+        );
+      } else {
+        throw err;
+      }
+    }
     // Questions table
     await dbConnection.query(`
       CREATE TABLE IF NOT EXISTS questions (

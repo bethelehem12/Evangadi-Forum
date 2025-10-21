@@ -24,7 +24,7 @@ const db = require("./db/dbConfig"); // Promise-based pool
 // Initialize app
 // -------------------------------
 const app = express();
-const port = process.env.PORT || 14255;
+const port = process.env.PORT;
 
 // -------------------------------
 // Middleware
