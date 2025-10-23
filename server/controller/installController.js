@@ -1,8 +1,7 @@
 const dbConnection = require("../db/dbConfig");
-
 async function install(req, res) {
   try {
-    // Users table
+    // 🧱 1. Create users table
     await dbConnection.query(`
       CREATE TABLE IF NOT EXISTS users (
         userid INT NOT NULL AUTO_INCREMENT,
@@ -15,7 +14,8 @@ async function install(req, res) {
         PRIMARY KEY (userid)
       );
     `);
-    // Reset Password
+
+    // 🧩 2. Add missing reset columns (safe to run even if columns already exist)
     try {
       await dbConnection.query(`
         ALTER TABLE users
@@ -32,7 +32,8 @@ async function install(req, res) {
         throw err;
       }
     }
-    // Questions table
+
+    // 📝 3. Questions table
     await dbConnection.query(`
       CREATE TABLE IF NOT EXISTS questions (
         id INT NOT NULL AUTO_INCREMENT,
@@ -47,7 +48,7 @@ async function install(req, res) {
       );
     `);
 
-    // Answers table
+    // 💬 4. Answers table
     await dbConnection.query(`
       CREATE TABLE IF NOT EXISTS answers (
         answerid INT NOT NULL AUTO_INCREMENT,
@@ -61,7 +62,7 @@ async function install(req, res) {
       );
     `);
 
-    // Groups table (backticks used for reserved keyword)
+    // 👥 5. Groups table
     await dbConnection.query(`
       CREATE TABLE IF NOT EXISTS \`groups\` (
         groupid INT NOT NULL AUTO_INCREMENT,
@@ -72,7 +73,7 @@ async function install(req, res) {
       );
     `);
 
-    // User-Groups junction table
+    // 👥 6. User-Groups table
     await dbConnection.query(`
       CREATE TABLE IF NOT EXISTS user_groups (
         id INT NOT NULL AUTO_INCREMENT,
@@ -86,7 +87,7 @@ async function install(req, res) {
       );
     `);
 
-    // Insert initial groups
+    // 🌱 7. Insert sample groups
     await dbConnection.query(`
       INSERT IGNORE INTO \`groups\` (name, description)
       VALUES
@@ -106,7 +107,7 @@ async function install(req, res) {
 
     res
       .status(201)
-      .json({ msg: "✅ Tables created and groups inserted successfully" });
+      .json({ msg: "✅ Tables created and upgraded successfully" });
   } catch (error) {
     console.error("❌ Error creating tables:", error.message);
     res.status(500).json({ msg: "Something went wrong, try again later" });
