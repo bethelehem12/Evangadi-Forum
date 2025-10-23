@@ -25,7 +25,8 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173", // local development
-      process.env.CLIENT_URL, // additional production frontend
+      "https://evangadi-forum-theta.vercel.app", // production frontend
+      // process.env.CLIENT_URL, // additional production frontend
     ],
     credentials: true, 
     
