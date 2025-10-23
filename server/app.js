@@ -56,6 +56,11 @@ app.use("/", installRoutes);
 app.use("/api/user", userRoutes); // Register/Login
 app.use("/api/auth", authRoutes); // Forgot/Reset Password
 
+// Debug route to test auth endpoints
+app.get("/api/auth/test", (req, res) => {
+  res.json({ message: "Auth routes are working!", timestamp: new Date().toISOString() });
+});
+
 // Protected routes (authMiddleware)
 app.use("/api/question", authMiddleware, questionRoutes);
 app.use("/api/answer", authMiddleware, answerRoutes);
