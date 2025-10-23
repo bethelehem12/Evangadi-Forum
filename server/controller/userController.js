@@ -60,7 +60,7 @@ async function login(req, res) {
   if (!email || !password) {
     return res
       .status(StatusCodes.BAD_REQUEST)
-      .json({ message: "please provide all requird information" });
+      .json({ message: "please provide all required information" });
   }
   try {
     const [user] = await dbConfig.query(
@@ -70,7 +70,7 @@ async function login(req, res) {
     if (user.length === 0) {
       return res
         .status(StatusCodes.BAD_REQUEST)
-        .json({ message: "invaild Email" });
+        .json({ message: "invalid Email" });
     }
     const isMatch = await bcrypt.compare(password, user[0].password);
 
@@ -89,12 +89,12 @@ async function login(req, res) {
 
     return res
       .status(StatusCodes.OK)
-      .json({ msg: "user login sucessfull", token });
+      .json({ msg: "user login successful", token });
   } catch (error) {
     console.log(error.message);
     return res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .json({ message: "someting went wrong,try again later" });
+      .json({ message: "something went wrong,try again later" });
   }
 }
 function checkuser(req, res) {
