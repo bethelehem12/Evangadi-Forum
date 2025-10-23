@@ -25,12 +25,10 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173", // local development
-      "https://evangadi-forum-theta.vercel.app", // production frontend
-      // process.env.CLIENT_URL, // additional production frontend
+      process.env.CLIENT_URL, // additional production frontend
     ],
-    credentials: true, // if using cookies or auth
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true, 
+    
   })
 );
 app.use(express.json({ limit: "10mb" })); // Limit request size
