@@ -24,12 +24,16 @@ app.use(helmet()); // Security headers
 app.use(
   cors({
     origin: [
-      "http://localhost:5173", // local dev frontend
-      process.env.CLIENT_URL, // production frontend
+      "http://localhost:5173", // local development
+      "https://evangadi-forum-theta.vercel.app", // production frontend
+      process.env.CLIENT_URL, // additional production frontend
     ],
     credentials: true, // if using cookies or auth
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
-);app.use(express.json({ limit: "10mb" })); // Limit request size
+);
+app.use(express.json({ limit: "10mb" })); // Limit request size
 
 // Rate limiting
 const limiter = rateLimit({
@@ -50,7 +54,12 @@ app.get("/", (req, res) => res.send("Hello from Evangadi Forum!"));
 // Public routes (no auth)
 app.use("/", installRoutes);
 app.use("/api/user", userRoutes); // Register/Login
-app.use("/api/user", authRoutes); // Forgot/Reset Password
+app.use("/api/auth", authRoutes); // Forgot/Reset Password
+
+// Debug route to test auth endpoints
+app.get("/api/auth/test", (req, res) => {
+  res.json({ message: "Auth routes are working!", timestamp: new Date().toISOString() });
+});
 
 // Protected routes (authMiddleware)
 app.use("/api/question", authMiddleware, questionRoutes);
