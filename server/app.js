@@ -24,7 +24,6 @@ app.use(helmet()); // Security headers
 app.use(
   cors({
     origin: [
-      "http://localhost:5173", // local dev frontend
       process.env.CLIENT_URL, // production frontend
     ],
     credentials: true, // if using cookies or auth
