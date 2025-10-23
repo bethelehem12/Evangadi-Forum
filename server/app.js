@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 require("dotenv").config();
 
 const authRoutes = require("./routes/authRoute");
@@ -20,14 +21,27 @@ const port = process.env.PORT || 14255;
 // Middleware
 // -------------------------------
 app.use(helmet()); // Security headers
-app.use(cors({ origin: process.env.FRONTEND_URL || "http://localhost:5173" }));
-app.use(express.json());
+app.use(
+  cors({
+    origin: [
+      // "http://localhost:5173", // local development
+      "https://evangadi-forum-theta.vercel.app", // production frontend
+      // process.env.CLIENT_URL, // additional production frontend
+    ],
+    credentials: true, // if using cookies or auth
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+app.use(express.json({ limit: "10mb" })); // Limit request size
 
-// Optional HTTP logger for dev
-if (process.env.NODE_ENV !== "production") {
-  app.use(require("morgan")("dev"));
-}
-
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: "Too many requests from this IP, please try again later."
+});
+app.use(limiter);
 // -------------------------------
 // Test route
 // -------------------------------
@@ -40,32 +54,23 @@ app.get("/", (req, res) => res.send("Hello from Evangadi Forum!"));
 // Public routes (no auth)
 app.use("/", installRoutes);
 app.use("/api/user", userRoutes); // Register/Login
-app.use("/api", authRoutes); // Forgot/Reset Password
+app.use("/api/auth", authRoutes); // Forgot/Reset Password
+
+// Debug route to test auth endpoints
+app.get("/api/auth/test", (req, res) => {
+  res.json({ message: "Auth routes are working!", timestamp: new Date().toISOString() });
+});
 
 // Protected routes (authMiddleware)
-app.use("/api", authMiddleware, questionRoutes);
-app.use("/api", authMiddleware, answerRoutes);
+app.use("/api/question", authMiddleware, questionRoutes);
+app.use("/api/answer", authMiddleware, answerRoutes);
 app.use("/api/ai", authMiddleware, aiRoute);
 app.use("/api/groups", authMiddleware, groupRoutes);
-
-// Health check
-app.get("/health", (req, res) => res.json({ status: "ok" }));
-
-// -------------------------------
-// 404 & Global Error Handler
-// -------------------------------
-app.use((req, res, next) =>
-  res.status(404).json({ message: "Route not found" })
-);
-
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: "Internal server error" });
-});
 
 // -------------------------------
 // Database connection & server start
 // -------------------------------
+
 async function startServer() {
   try {
     await db.query("SELECT 1"); // Test DB connection
