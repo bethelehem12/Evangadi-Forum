@@ -24,7 +24,7 @@ app.use(helmet()); // Security headers
 app.use(
   cors({
     origin: [
-      // "http://localhost:5173", // local development
+      "http://localhost:5173", // local development
       "https://evangadi-forum-theta.vercel.app", // production frontend
       // process.env.CLIENT_URL, // additional production frontend
     ],
