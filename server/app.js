@@ -23,12 +23,9 @@ const port = process.env.PORT || 14255;
 app.use(helmet()); // Security headers
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173", // local development
-      process.env.CLIENT_URL, // additional production frontend
-    ],
-    credentials: true, 
-    
+    origin: process.env.CLIENT_URL,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
   })
 );
 app.use(express.json({ limit: "10mb" })); // Limit request size
