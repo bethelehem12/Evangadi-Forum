@@ -21,20 +21,14 @@ const port = process.env.PORT || 14255;
 // Middleware
 // -------------------------------
 app.use(helmet()); // Security headers
-app.use(
-  cors({
-    origin: process.env.CLIENT_URL,
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
-  })
-);
+app.use(cors());
 app.use(express.json({ limit: "10mb" })); // Limit request size
 
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // limit each IP to 100 requests per windowMs
-  message: "Too many requests from this IP, please try again later."
+  message: "Too many requests from this IP, please try again later.",
 });
 app.use(limiter);
 // -------------------------------
@@ -53,7 +47,10 @@ app.use("/api/auth", authRoutes); // Forgot/Reset Password
 
 // Debug route to test auth endpoints
 app.get("/api/auth/test", (req, res) => {
-  res.json({ message: "Auth routes are working!", timestamp: new Date().toISOString() });
+  res.json({
+    message: "Auth routes are working!",
+    timestamp: new Date().toISOString(),
+  });
 });
 
 // Protected routes (authMiddleware)
