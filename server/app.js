@@ -53,7 +53,7 @@ app.get("/", (req, res) => res.send("Hello from Evangadi Forum!"));
 // Public routes (no auth)
 app.use("/", installRoutes);
 app.use("/api/user", userRoutes); // Register/Login
-app.use("/api", authRoutes); // Forgot/Reset Password
+app.use("/api/auth", authRoutes); // Forgot/Reset Password
 
 // Debug route to test auth endpoints
 app.get("/api/auth/test", (req, res) => {
